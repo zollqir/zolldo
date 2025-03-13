@@ -75,26 +75,24 @@ def list_tasks(sort_by: Optional[str] = None, completed: Optional[bool] = None) 
     filtered_tasks = {k: v for k, v in sorted(filtered_tasks.items(), key=lambda item: datetime.strptime(item[1]["due_date"], "%Y-%m-%d-%H:%M"))}
   return filtered_tasks
 
-load()
-add_task("task b", "2025-04-13-02:31", "description b")
-add_task("task c", "2025-04-13-02:30", "description c")
-add_task("task a", "2025-04-13-02:29", "description a")
-task_dict[1]["is_completed"] = True
-print("Unsorted: ")
-print(list_tasks())
-print("Unsorted, without completed: ")
-print(list_tasks(completed=False))
-print("Unsorted, without uncompleted: ")
-print(list_tasks(completed=True))
-print("Sorted by title: ")
-print(list_tasks(sort_by="title"))
-print("Sorted by title, without completed: ")
-print(list_tasks(sort_by="title", completed=False))
-print("Sorted by title, without uncompleted: ")
-print(list_tasks(sort_by="title", completed=True))
-print("Sorted by due date: ")
-print(list_tasks(sort_by="due_date"))
-print("Sorted by due date, without completed: ")
-print(list_tasks(sort_by="due_date", completed=False))
-print("Sorted by due date, without uncompleted: ")
-print(list_tasks(sort_by="due_date", completed=True))
+def update_task(task_id: int, title: Optional[str] = None, due_date: Optional[str] = None, description: Optional[str] = None, is_completed: Optional[bool] = None) -> Task:
+  '''Updates a task's title, due date, description, and/or completion status. Implicitly raises an exception if called with an invalid task id.'''
+  global task_dict
+  task = task_dict[task_id]
+  if title is not None:
+    task["title"] = title
+  if due_date is not None:
+    task["due_date"] = due_date
+  if description is not None:
+    task["description"] = description
+  if is_completed is not None:
+    task["is_completed"] = is_completed
+  save()
+  return task
+  
+
+def main():
+  load()
+
+if __name__ == "__main__":
+  main()

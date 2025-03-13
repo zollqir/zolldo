@@ -89,7 +89,12 @@ def update_task(task_id: int, title: Optional[str] = None, due_date: Optional[st
     task["is_completed"] = is_completed
   save()
   return task
-  
+
+def delete_task(task_id: int) -> None:
+  '''Deletes a task. Implicitly raises an exception if called with an invalid task id.'''
+  global task_dict
+  del task_dict[task_id]
+  save()
 
 def main():
   load()

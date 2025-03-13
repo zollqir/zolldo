@@ -3,6 +3,7 @@
 import json
 import os
 from typing import Optional, TypedDict
+from datetime import datetime
 
 class Task(TypedDict):
   title: str
@@ -62,5 +63,38 @@ def add_task(title: str, due_date: str, description: str = "", id: Optional[int]
   save()
   return task
 
+def list_tasks(sort_by: Optional[str] = None, completed: Optional[bool] = None) -> dict[int, Task]:
+  '''Get tasks, optionally filtered by completion, and sorted by either title or due date.'''
+  global task_dict
+  filtered_tasks = dict(task_dict)
+  if completed is not None:
+    filtered_tasks = {k: v for k, v in filtered_tasks.items() if v["is_completed"] == completed}
+  if sort_by == "title":
+    filtered_tasks = {k: v for k, v in sorted(filtered_tasks.items(), key=lambda item: item[1]["title"])}
+  elif sort_by == "due_date":
+    filtered_tasks = {k: v for k, v in sorted(filtered_tasks.items(), key=lambda item: datetime.strptime(item[1]["due_date"], "%Y-%m-%d-%H:%M"))}
+  return filtered_tasks
+
 load()
-add_task("with explicit ID", "2025-13-04", id = 14)
+add_task("task b", "2025-04-13-02:31", "description b")
+add_task("task c", "2025-04-13-02:30", "description c")
+add_task("task a", "2025-04-13-02:29", "description a")
+task_dict[1]["is_completed"] = True
+print("Unsorted: ")
+print(list_tasks())
+print("Unsorted, without completed: ")
+print(list_tasks(completed=False))
+print("Unsorted, without uncompleted: ")
+print(list_tasks(completed=True))
+print("Sorted by title: ")
+print(list_tasks(sort_by="title"))
+print("Sorted by title, without completed: ")
+print(list_tasks(sort_by="title", completed=False))
+print("Sorted by title, without uncompleted: ")
+print(list_tasks(sort_by="title", completed=True))
+print("Sorted by due date: ")
+print(list_tasks(sort_by="due_date"))
+print("Sorted by due date, without completed: ")
+print(list_tasks(sort_by="due_date", completed=False))
+print("Sorted by due date, without uncompleted: ")
+print(list_tasks(sort_by="due_date", completed=True))

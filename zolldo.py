@@ -3,7 +3,6 @@
 import json
 import os
 from typing import Optional, TypedDict
-from datetime import datetime
 
 class Task(TypedDict):
   title: str
@@ -64,7 +63,7 @@ def add_task(title: str, due_date: str, description: str = "", id: Optional[int]
   return task
 
 def list_tasks(sort_by: Optional[str] = None, completed: Optional[bool] = None) -> dict[int, Task]:
-  '''Get tasks, optionally filtered by completion, and sorted by either title or due date.'''
+  '''Get tasks, optionally filtered by completion, and optionally sorted by either title or due date.'''
   global task_dict
   filtered_tasks = dict(task_dict)
   if completed is not None:
@@ -72,7 +71,7 @@ def list_tasks(sort_by: Optional[str] = None, completed: Optional[bool] = None) 
   if sort_by == "title":
     filtered_tasks = {k: v for k, v in sorted(filtered_tasks.items(), key=lambda item: item[1]["title"])}
   elif sort_by == "due_date":
-    filtered_tasks = {k: v for k, v in sorted(filtered_tasks.items(), key=lambda item: datetime.strptime(item[1]["due_date"], "%Y-%m-%d-%H:%M"))}
+    filtered_tasks = {k: v for k, v in sorted(filtered_tasks.items(), key=lambda item: item[1]["due_date"])}
   return filtered_tasks
 
 def update_task(task_id: int, title: Optional[str] = None, due_date: Optional[str] = None, description: Optional[str] = None, is_completed: Optional[bool] = None) -> Task:
@@ -94,6 +93,12 @@ def delete_task(task_id: int) -> None:
   '''Deletes a task. Implicitly raises an exception if called with an invalid task id.'''
   global task_dict
   del task_dict[task_id]
+  save()
+
+def delete_all_tasks() -> None:
+  '''Deletes all tasks.'''
+  global task_dict
+  task_dict = {}
   save()
 
 def main():

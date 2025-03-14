@@ -22,7 +22,7 @@ requires = ["poetry-core>=1.1.1"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.autopep8]
-max_line_length=120
+max_line_length=140
 ignore="E111,E114,E121" # allow 2-space indents
 verbose=true
 indent-size=2

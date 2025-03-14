@@ -6,26 +6,29 @@ import os
 from datetime import datetime
 from typing import Any, Optional, TypedDict
 
+
 class Task(TypedDict):
   title: str
   due_date: datetime
   completed: bool
   description: str
 
+
 TODO_FILENAME = "todo.json"
+
 
 class TaskManager:
   def __init__(self):
     '''Loads tasks from file.'''
     self.task_dict: dict[int, Task] = {}
     self.max_id = 0
-    
+
     if os.path.exists(TODO_FILENAME):
       with open(TODO_FILENAME, "r") as file:
         self.task_dict = json.load(file)
-        self.task_dict = {int(k): v for k, v in self.task_dict.items()} # use ints rather than strs as keys
+        self.task_dict = {int(k): v for k, v in self.task_dict.items()}  # use ints rather than strs as keys
         for task in self.task_dict.values():
-          task["due_date"] = datetime.fromisoformat(task["due_date"]) # convert ISO strings to datetimes
+          task["due_date"] = datetime.fromisoformat(task["due_date"])  # convert ISO strings to datetimes
     else:
       self.task_dict = {}
     self.max_id = int(max(self.task_dict.keys())) if len(self.task_dict) > 0 else 0
@@ -36,11 +39,11 @@ class TaskManager:
     if isinstance(obj, datetime):
       return obj.isoformat()
     raise TypeError("Type is not serializable")
-  
+
   def save(self) -> None:
     '''Save tasks to file.'''
     with open(TODO_FILENAME, "w") as file:
-      json.dump(task_dict, file, default=self.datetime_serializer)
+      json.dump(self.task_dict, file, default=self.datetime_serializer)
 
   def gen_id(self, id: Optional[int]) -> int:
     '''Generate a unique task id, using the given one if possible.'''
@@ -52,9 +55,10 @@ class TaskManager:
     else:
       if self.max_id < id:
         self.max_id = id
-      return id  
+      return id
 
-  def add_task(self, title: str, due_date: datetime, description: str = "", completed: bool = False, id: Optional[int] = None) -> tuple[Task, int]:
+  def add_task(self, title: str, due_date: datetime, description: str = "",
+               completed: bool = False, id: Optional[int] = None) -> tuple[Task, int]:
     '''Create a new task.'''
     task: Task = {
       "title": title,
@@ -67,7 +71,8 @@ class TaskManager:
     self.save()
     return task, id_value
 
-  def list_tasks(self, sort_by: Optional[str] = None, completed: Optional[bool] = None, reverse: bool = False) -> dict[int, Task]:
+  def list_tasks(self, sort_by: Optional[str] = None, completed: Optional[bool]
+                 = None, reverse: bool = False) -> dict[int, Task]:
     '''Get tasks, optionally filtered by completion, and optionally sorted by either title or due date.'''
     filtered_tasks = dict(self.task_dict)
     if completed is not None:
@@ -80,7 +85,12 @@ class TaskManager:
       filtered_tasks = dict(reversed(filtered_tasks.items()))
     return filtered_tasks
 
-  def update_task(self, id: int, title: Optional[str] = None, due_date: Optional[datetime] = None, description: Optional[str] = None, completed: Optional[bool] = None) -> tuple[Task, int]:
+  def update_task(self,
+                  id: int,
+                  title: Optional[str] = None,
+                  due_date: Optional[datetime] = None,
+                  description: Optional[str] = None,
+                  completed: Optional[bool] = None) -> tuple[Task, int]:
     '''Updates a task's title, due date, description, and/or completion status. Raises an exception if called with an invalid task id.'''
     task = self.task_dict[id]
     if title is not None:
@@ -108,11 +118,12 @@ class TaskManager:
     '''Validates and processes due date string. Raises an exception if the string is invalid.'''
     try:
       date = datetime.fromisoformat(due_date)
-      if date.tzinfo is None: # assume timezone is same as system timezone
+      if date.tzinfo is None:  # assume timezone is same as system timezone
         date = date.astimezone()
       return date
     except ValueError:
-      raise argparse.ArgumentError("Invalid due date format (format: any ISO datetime string such as 1970-01-01 or 1970-01-01T00:00).")
+      raise argparse.ArgumentError(
+        "Invalid due date format (format: any ISO datetime string such as 1970-01-01 or 1970-01-01T00:00).")
 
   def validate_id(self, id: str) -> int:
     '''Validates a task ID. Raises an exception if the ID is not a positive integer.'''
@@ -123,14 +134,14 @@ class TaskManager:
       return id_value
     except ValueError:
       raise argparse.ArgumentTypeError("Task id must be a positive integer.")
-  
+
   def validate_unused_id(self, id: str) -> int:
     '''Validates a task ID. Raises an exception if the ID is invalid, or if the ID is already in use.'''
     id_value = self.validate_id(id)
     if id_value in self.task_dict:
       raise argparse.ArgumentError(f"ID {id} is already in use.")
     return id_value
-  
+
   def validate_used_id(self, id: str) -> int:
     '''Validates a task ID. Raises an exception if the ID is invalid, or if the ID is not already in use.'''
     id_value = self.validate_id(id)
@@ -138,12 +149,15 @@ class TaskManager:
       raise argparse.ArgumentError(f"ID {id} does not match any task.")
     return id_value
 
+
 def stringify_task(task: Task, id: int) -> str:
   '''Converts a task into a human-readable string suitable for printing to the console.'''
+  # autopep8: off
   return f"""{'\x1b[32m' + "☑" + '\033[0m' if task["completed"] else "☐"} {task["title"]} - {id}{" - " + '\033[91m' + "OVERDUE" + '\033[0m' if task["due_date"] < datetime.now().astimezone() else ""}
     Description: {task["description"]}
-    Due: {task["due_date"].strftime("%Y %b %d %H:%M:%S")}
-"""
+    Due: {task["due_date"].strftime("%Y %b %d %H:%M:%S")}"""
+  # autopep8: on
+
 
 def cli() -> None:
   '''CLI interface of the program'''
@@ -152,7 +166,8 @@ def cli() -> None:
     prog="zolldo",
     description="A lightweight todo-list application CLI")
   subparsers = parser.add_subparsers(dest="command", required=True)
-  
+
+  # autopep8: off
   # add
   add_parser = subparsers.add_parser("add", help="Add a new to-do task.")
   add_parser.add_argument("--title",                required=True, type=str,                                      help="Title of the task.")
@@ -163,7 +178,7 @@ def cli() -> None:
   add_completed_group.add_argument("--completed",   required=False,action="store_true", dest="completed",         help="Mark task as completed.")
   add_completed_group.add_argument("--uncompleted", required=False,action="store_false",dest="completed",         help="Mark task as uncompleted (default).")
   add_completed_group.set_defaults(completed=False)
-  
+
   # list
   list_parser = subparsers.add_parser("list", help="List all tasks.")
   list_parser.add_argument("--sort_by",               required=False, choices=["title", "due_date"],          help="Sort tasks by title or due date.")
@@ -172,7 +187,7 @@ def cli() -> None:
   list_completed_group.add_argument("--completed",    required=False, action="store_true", dest="completed",  help="Show only completed tasks.")
   list_completed_group.add_argument("--uncompleted",  required=False, action="store_false",dest="completed",  help="Show only uncompleted tasks.")
   list_completed_group.set_defaults(completed=None)
-  
+
   # update
   update_parser = subparsers.add_parser("update", help="Update a task.")
   update_parser.add_argument("--id",                    required=True, type=manager.validate_used_id,           help="ID of the task to update.")
@@ -183,18 +198,19 @@ def cli() -> None:
   update_completed_group.add_argument("--completed",    required=False,action="store_true",  dest="completed",  help="Mark task as completed.")
   update_completed_group.add_argument("--uncompleted",  required=False,action="store_false", dest="completed",  help="Mark task as uncompleted.")
   update_completed_group.set_defaults(completed=None)
-  
+
   # delete
   delete_parser = subparsers.add_parser("delete", help="Delete a task.")
   delete_group = delete_parser.add_mutually_exclusive_group(required=True)
   delete_group.add_argument("--id",  type=manager.validate_used_id, help="ID of the task to delete.")
   delete_group.add_argument("--all", action="store_true",           help="Delete all tasks.")
-  
+  # autopep8: on
   args = parser.parse_args()
-  
+
   match args.command:
     case "add":
-      task, id = manager.add_task(title=args.title, due_date=args.due_date, description=args.description, completed=args.completed, id=args.id)
+      task, id = manager.add_task(title=args.title, due_date=args.due_date,
+                                  description=args.description, completed=args.completed, id=args.id)
       print(f"""Task successfully added:
   {stringify_task(task, id)}""")
     case "list":
@@ -202,7 +218,12 @@ def cli() -> None:
       for id, task in tasks.items():
         print(stringify_task(task, id))
     case "update":
-      task = manager.update_task(id=args.id, title=args.title, due_date=args.due_date, description=args.description, completed=args.completed)
+      task = manager.update_task(
+          id=args.id,
+          title=args.title,
+          due_date=args.due_date,
+          description=args.description,
+          completed=args.completed)
       print(f"""Task successfully updated:
   {stringify_task(task, args.id)}""")
     case "delete":
@@ -213,8 +234,10 @@ def cli() -> None:
         manager.delete_task(args.id)
         print(f"Successfully deleted task {args.id}")
 
+
 def main():
   cli()
+
 
 if __name__ == "__main__":
   main()

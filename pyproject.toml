@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "zolldo"
+version = "0.1"
+description = "A lightweight to-do list."
+authors = ["Caleb Aikens <zollqir@gmail.com>"]
+license = "GNU General Public License v3.0"
+repository = "https://github.com/zollqir/zolldo"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[tool.poetry.scripts]
+zolldo = "zolldo:main"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.3.1"
+pip = "^23.1.2"
+
+[build-system]
+requires = ["poetry-core>=1.1.1"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.autopep8]
+max_line_length=120
+ignore="E111,E114,E121" # allow 2-space indents
+verbose=true
+indent-size=2
+aggressive=3
+exit-code=true

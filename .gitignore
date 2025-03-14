@@ -1,1 +1,3 @@
 todo.json
+dist/*
+__pycache__/*

@@ -17,17 +17,17 @@ class Task(TypedDict):
   description: str
 
 
-TODO_FILENAME = "todo.json"
-
-
 class TaskManager:
   def __init__(self):
     '''Loads tasks from file.'''
     self.task_dict: dict[int, Task] = {}
     self.max_id = 0
 
-    if os.path.exists(TODO_FILENAME):
-      with open(TODO_FILENAME, "r") as file:
+    self.script_dir = os.path.dirname(os.path.abspath(__file__))
+    self.todo_filename = os.path.join(self.script_dir, "todo.json")
+    
+    if os.path.exists(self.todo_filename):
+      with open(self.todo_filename, "r") as file:
         self.task_dict = json.load(file)
         self.task_dict = {int(k): v for k, v in self.task_dict.items()}  # use ints rather than strs as keys
         for task in self.task_dict.values():
@@ -45,7 +45,7 @@ class TaskManager:
 
   def save(self) -> None:
     '''Save tasks to file.'''
-    with open(TODO_FILENAME, "w") as file:
+    with open(self.todo_filename, "w") as file:
       json.dump(self.task_dict, file, default=self.datetime_serializer)
 
   def gen_id(self, id: Optional[int]) -> int:

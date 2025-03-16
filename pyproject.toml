@@ -1,24 +1,29 @@
-[tool.poetry]
+[project]
 name = "zolldo"
-version = "0.1"
+version = "1.0"
 description = "A lightweight to-do list."
-authors = ["Caleb Aikens <zollqir@gmail.com>"]
-license = "GNU General Public License v3.0"
-repository = "https://github.com/zollqir/zolldo"
+authors = [
+  { name="Caleb Aikens", email="zollqir@gmail.com" },
+]
+requires-python = ">=3.10"
 readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3.10",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Natural Language :: English"
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
+[project.urls]
+Homepage = "https://github.com/zollqir/zolldo"
+Issues = "https://github.com/zollqir/zolldo/issues"
 
-[tool.poetry.scripts]
-zolldo = "zolldo:main"
-
-[tool.poetry.group.dev.dependencies]
-pip = "^23.1.2"
+[project.scripts]
+zolldo = "zolldo.zolldo:cli"
 
 [build-system]
-requires = ["poetry-core>=1.1.1"]
-build-backend = "poetry.core.masonry.api"
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
 
 [tool.autopep8]
 max_line_length=140

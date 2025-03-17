@@ -162,7 +162,9 @@ class TaskManager:
 def stringify_task(task: Task, id: int) -> str:
   '''Converts a task into a human-readable string suitable for printing to the console.'''
   # autopep8: off
-  return f"""{'\x1b[32m' + "☑" + '\033[0m' if task["completed"] else "☐"} {task["title"]} - {id}{" - " + '\033[91m' + "OVERDUE" + '\033[0m' if task["due_date"] < datetime.now().astimezone() else ""}
+  green_check = '\x1b[32m' + "☑" + '\033[0m'
+  red_overdue = " - " + '\033[91m' + "OVERDUE" + '\033[0m'
+  return f"""{ green_check if task["completed"] else "☐"} {task["title"]} - {id}{ red_overdue if task["due_date"] < datetime.now().astimezone() else ""}
     Description: {task["description"]}
     Due: {task["due_date"].strftime("%Y %b %d %H:%M:%S")}"""
   # autopep8: on

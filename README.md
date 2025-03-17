@@ -1,6 +1,6 @@
 # Zolldo - To-Do List Application
 
-This a simple and lightweight to-do list application that provides both a CLI and a GUI for task management. Users can add, view, update, and delete tasks.
+This is a simple and lightweight to-do list application that provides both a CLI and a GUI for task management. Users can add, view, update, and delete tasks.
 
 ## Features
 
